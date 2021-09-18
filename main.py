@@ -16,6 +16,9 @@ class Planilha:
         self.fileName = "cpa"
         self.tempFileName = "tempCpa"
         self.rows = []
+        #estou assumindo que nosso alpha vai ser 0.05
+        #grau de liberdade = k - 1 = 8 - 1 = 7 
+        self.chiSquareValue = 14.067
 
     def readCsv(self):
         with open(f"{self.fileName}.csv", "r", newline="") as csvfile:
@@ -148,7 +151,7 @@ def gera_posicoes(array):
     return saida
         # qtd_repeted
 
-#isso aqui retorna um arrai com a ordem de rankeamento que a linha que foi enserida aqui tinha
+#isso aqui retorna um array com a ordem de rankeamento que a linha que foi enserida aqui tinha
 def rankeia(row):
     linha = filtra(row, 0)
     tuplas_rank = gera_posicoes(linha)
@@ -162,6 +165,7 @@ def rankeia(row):
             print ("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
     return array_com_rank
 
+#isso aqui retorna um array a soma do rank de um conjunto enserido aqui
 def soma_ranks(conjunto):
     matrix_rank = []
     for row in conjunto.rows:
@@ -172,22 +176,37 @@ def soma_ranks(conjunto):
     for c in range(tam):
         for r in range(len(matrix_rank)):
             soma_ranks_saida[c] += matrix_rank[r][c]
-    print("saida:",soma_ranks_saida)
+    return soma_ranks_saida
 
 
+def calculateFriedman(conjunto, soma_ranks):
+    p2 = 0
+    for num in soma_ranks:
+        num = num*num
+        p2 += num
+    
+    b = len(conjunto.rows)
+    k = 8
+    p1 = 12/(b*k*(k+1))
+    p3 = 3*b*(k+1)
+    return p1*p2-p3
 
 
 
 def main():
     planilha = Planilha()
     conjuntos = planilha.build()
+    matrix_ranks = []
     for conjunto in conjuntos:
-        print("jkadfjkag", conjunto)
-        soma_ranks(conjunto)
+        soma = soma_ranks(conjunto)
+        f = calculateFriedman(conjunto, soma)
+        if f >= planilha.chiSquareValue:
+            print("rejeitada hipotese nula, aceita hipotese alternativa, pois f =", f, " o que é maior ou igual a", planilha.chiSquareValue)
+        else:
+            print("aceita hipotese nula, rejeitada hipotese alternativa, pois f =", f, " o que é menor que", planilha.chiSquareValue)
+
+    
         
-        for row in conjunto.rows:
-            linha = rankeia(row)
-        print(conjunto.FOzero, conjunto.FO, conjunto.output)
     pass
 
 
