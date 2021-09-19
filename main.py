@@ -358,6 +358,20 @@ def anterior(i, j, table):
     else:
         return i-1, maxJ
 
+def rankAddSolution(array):
+    array_copy = array.copy()
+    for i in range(len(array)):
+        array[i] = ( "S"+str(i)  , array[i])
+    array_copy = sorted(array_copy)
+    for indexi, i in enumerate(array_copy):
+        for indexj, j in enumerate(array):
+            if i == j[1]:
+                array_copy[indexi] = array[indexj]
+                array.pop(indexj)
+    print("array_copy", array_copy)
+    return array_copy
+
+
 #fim de coisas relacionadas apenas ao teste de Friedman
 
 def main():
@@ -370,6 +384,8 @@ def main():
         if f >= planilha.chiSquareValue:
             print("rejeitada hipotese nula, aceita hipotese alternativa, pois f =", f, " o que é maior ou igual a", planilha.chiSquareValue)
             print(citicalValue(planilha, conjunto))
+            print(soma)
+            rankAddSolution(soma)
         else:
             print("aceita hipotese nula, rejeitada hipotese alternativa, pois f =", f, " o que é menor que", planilha.chiSquareValue)
 
