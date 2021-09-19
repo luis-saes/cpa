@@ -311,7 +311,7 @@ def calculateFriedman(conjunto, soma_ranks):
 
 
 #coisas relacionadas em caso de rejeição da hipotese nula
-def citicalValue(planilha, conjunto):
+def criticalValue(planilha, conjunto):
        
     tailArea = planilha.alpha/(planilha.k * (planilha.k - 1))
     graphArea = 1 - tailArea
@@ -362,15 +362,24 @@ def rankAddSolution(array):
     array_copy = array.copy()
     for i in range(len(array)):
         array[i] = ( "S"+str(i)  , array[i])
+
     array_copy = sorted(array_copy)
     for indexi, i in enumerate(array_copy):
         for indexj, j in enumerate(array):
             if i == j[1]:
                 array_copy[indexi] = array[indexj]
                 array.pop(indexj)
-    print("array_copy", array_copy)
     return array_copy
 
+def compareEacheColumn(array, criticalValue):
+    tam = len(array)
+    for i in range(0,tam):
+        for j in range(i+1, tam):
+            diference = modula(array[i][1] - array[j][1])
+            if diference > criticalValue:
+                print(array[i][0], array[j][0], "rejected null hipoteses")
+#            else: 
+#                print(array[i][0], array[j][0], "accepted null hipoteses")
 
 #fim de coisas relacionadas apenas ao teste de Friedman
 
@@ -383,9 +392,9 @@ def main():
         f = calculateFriedman(conjunto, soma)
         if f >= planilha.chiSquareValue:
             print("rejeitada hipotese nula, aceita hipotese alternativa, pois f =", f, " o que é maior ou igual a", planilha.chiSquareValue)
-            print(citicalValue(planilha, conjunto))
-            print(soma)
-            rankAddSolution(soma)
+            valorCritico = criticalValue(planilha, conjunto)
+            solucaoAdicionadaRank = rankAddSolution(soma)
+            compareEacheColumn(solucaoAdicionadaRank, valorCritico)
         else:
             print("aceita hipotese nula, rejeitada hipotese alternativa, pois f =", f, " o que é menor que", planilha.chiSquareValue)
 
