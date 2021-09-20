@@ -1,6 +1,7 @@
 import pandas as pd
 import csv
 import math
+from colorama import Fore, Back, Style
 
 '''
 Friedman aligned-ranks test; 
@@ -276,6 +277,7 @@ def rankeia(row):
                 break
         else:
             print ("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+    #print("Etapa 2(ranquear):", array_com_rank)
     return array_com_rank
 
 #isso aqui retorna um array a soma do rank de um conjunto enserido aqui
@@ -289,6 +291,7 @@ def soma_ranks(conjunto):
     for c in range(tam):
         for r in range(len(matrix_rank)):
             soma_ranks_saida[c] += matrix_rank[r][c]
+    #print("Etapa 3(soma dos ranks):", soma_ranks_saida)
     return soma_ranks_saida
 
 
@@ -306,7 +309,9 @@ def calculateFriedman(conjunto, soma_ranks):
     k = 8
     p1 = 12/(b*k*(k+1))
     p3 = 3*b*(k+1)
-    return p1*p2-p3
+    f = p1*p2-p3
+    #print("Etapa 4(Calculo de F):",f)
+    return f
 
 
 
@@ -377,33 +382,33 @@ def compareEacheColumn(array, criticalValue):
         for j in range(i+1, tam):
             diference = modula(array[i][1] - array[j][1])
             if diference > criticalValue:
-                print(array[i][0], array[j][0], "rejected null hipoteses")
-#            else: 
-#                print(array[i][0], array[j][0], "accepted null hipoteses")
+                print(array[i][0], array[j][0], "rejeitada hipotese nula")
+            #else: 
+                #print(array[i][0], array[j][0], "aceita hipotese nula")
 
 #fim de coisas relacionadas apenas ao teste de Friedman
 
 def main():
     planilha = Planilha()
     conjuntos = planilha.build()
-    matrix_ranks = []
-    for conjunto in conjuntos:
+    
+    for index, conjunto in enumerate(conjuntos):
+        print("Conjunto", str(index + 1) + ":")
         soma = soma_ranks(conjunto)
         f = calculateFriedman(conjunto, soma)
+        #print("Etapa 5(comparação se F>X²):")
         if f >= planilha.chiSquareValue:
-            print("rejeitada hipotese nula, aceita hipotese alternativa, pois f =", f, " o que é maior ou igual a", planilha.chiSquareValue)
+            #print(Fore.RED + "rejeitada hipotese nula, aceita hipotese alternativa" + Style.RESET_ALL)
             valorCritico = criticalValue(planilha, conjunto)
+            #print("Etapa 6(calculo do valor cŕitico):", valorCritico)
             solucaoAdicionadaRank = rankAddSolution(soma)
+            #print("Etapa 7(Ordem da soma dos ranks):\n",solucaoAdicionadaRank)
+            print("Etapa 8(Comparação da diferença com valor crítico):")
             compareEacheColumn(solucaoAdicionadaRank, valorCritico)
-        else:
-            print("aceita hipotese nula, rejeitada hipotese alternativa, pois f =", f, " o que é menor que", planilha.chiSquareValue)
+        #else:
+            #print(Fore.GREEN + "aceita hipotese nula, rejeitada hipotese alternativa" + Style.RESET_ALL)
 
     
-        
-    pass
-
-
-
 if __name__ == "__main__":
     main()
     
